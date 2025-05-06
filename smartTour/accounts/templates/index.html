@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Tour: Your travel companion</title>
+    {%load static%}
+    <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+</head>
+
+<body class="radial-gradient-bg">
+
+    <nav class="navbar">
+
+    </nav>
+
+    <div class="banner">
+ 
+        <img src="{% static 'media/chatbot.png' %}" alt="" height="218px" width="300px" class="bouncing-image">
+        <h1>Your AI Tour companion</h1>
+        <span>Get all the info you need for your next tour</span>
+        <a href="{%url 'sign-up' %}" class="link-btn">Get started</a>
+
+    </div>
+
+</body>
+
+</html>

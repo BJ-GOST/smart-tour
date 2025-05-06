@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Tour: Chat</title>
+    {%load static%}
+    <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+</head>
+
+<body class="radial-gradient-bg">
+
+    <nav class="chat-navbar">
+
+        <div class="chat-navbar-div chat-navbar-div-start">
+            <img src="{% static 'media/chatbot.png' %}" alt="" srcset="" height="40px" width="55px" class="bouncing-image">
+            <h1 style="font-size: medium;">Hello {{request.user}}!</h1>
+        </div>
+
+        <div class="chat-navbar-div chat-navbar-div-end">
+            <a href="{% url 'logout' %}">
+                <img src="{% static 'media/message.svg' %}" alt="" height="20px" width="20px">
+            </a>
+            <a href="{% url 'logout' %}">
+                <img src="{% static 'media/power.svg' %}" alt="" height="20px" width="20px">
+            </a>
+        </div>
+
+    </nav>
+
+    
+    
+    <div class="home-banner">
+
+        <div id="chat-container" class="chat-container"></div>
+
+    </div>
+
+    <div class="chat-input-div">
+        <input type="text" class="chat-input" id="user-input">
+        <button class="chat-btn" onclick="sendMessage()">
+            <img src="{% static 'media/send.svg' %}" alt="" height="20px" width="20px">
+        </button>
+    </div>
+
+    <script>
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            input.value = '';
+
+            if (!message) return;
+
+            const chatContainer = document.getElementById('chat-container');
+
+            // Append user's message
+            const userBubble = document.createElement('div');
+            userBubble.classList.add('message', 'user');
+            userBubble.textContent = message;
+            chatContainer.appendChild(userBubble);
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const response = await fetch('ask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message})
+                });
+
+                const data = await response.json();
+
+                // Append bot's response
+                const botBubble = document.createElement('div');
+                botBubble.classList.add('message', 'bot');
+                botBubble.textContent = data.reply || "Sorry, I couldn't respond.";
+                chatContainer.appendChild(botBubble);
+
+                // Scroll to bottom again
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            } catch (error) {
+                const errorBubble = document.createElement('div');
+                errorBubble.classList.add('message', 'bot');
+                errorBubble.textContent = "Error connecting to assistant.";
+                chatContainer.appendChild(errorBubble);
+            }
+        }
+
+    </script>
+    
+</body>
+
+</html>

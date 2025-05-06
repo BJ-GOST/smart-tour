@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up on Smart Tour</title>
+    {%load static%}
+    <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+</head>
+
+<body class="radial-gradient-bg">
+
+    <div class="banner">
+
+        <form method="post" class="auth-form">
+
+            {%csrf_token%}
+
+            <img src="{% static 'media/chatbot.png' %}" alt="" height="104px" width="150px" class="bouncing-image">
+            
+            <h1 style="width: 100%; text-align: center; font-size: large;">Sign Up for Smart Tour</h1>
+
+            <div class="auth-form-div">
+                {{form.username}}
+            </div>
+
+            <div class="auth-form-div">
+                {{form.email}}
+            </div>
+
+            <div class="auth-form-div">
+                {{form.phone_no}}
+            </div>
+
+            <div class="auth-form-div">
+                {{form.password1}}
+            </div>
+
+            <div class="auth-form-div">
+                {{form.password2}}
+            </div>
+
+            <button class="btn">Sign Up</button>
+            <a href="{% url 'login'%}" style="text-decoration: none; font-family: 'Roboto Mono', monospace; color: #f5f5f5; text-align: center;">Have an account? Log In</a>
+        </form>
+
+    </div>
+    
+</body>
+
+</html>

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 import google.generativeai as genai
 import json
 
@@ -24,7 +25,9 @@ model = genai.GenerativeModel(
     system_instruction="Provide tour guidance and information."
 )
 
+
 # Create your views here.
+@login_required(login_url='login')
 def home(request):
     template_name = 'home.html'
     return render(request, template_name)

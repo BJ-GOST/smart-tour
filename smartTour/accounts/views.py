@@ -29,11 +29,8 @@ def login(request):
 
 
 def signUp(request):
-    form = signUpForm()
     template_name = 'signup.html'
-    context = {
-        'form': form
-    }
+
     if request.method == 'POST':
         form = signUpForm(request.POST)
         if form.is_valid():
@@ -44,6 +41,14 @@ def signUp(request):
             if user is not None:
                 auth.login(request, user)
                 return redirect('home')
+            else:
+                messages.error(request, 'Authentication failed. Please try logging in manually.')
+    else:
+        form = signUpForm()
+
+    context = {
+        'form': form
+    }
     return render(request, template_name, context)
 
 

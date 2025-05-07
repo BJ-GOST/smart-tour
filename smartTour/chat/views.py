@@ -1,3 +1,4 @@
+from google.api_core import retry as google_retry
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -20,10 +21,21 @@ generation_config = {
 
 # Initialize the GenerativeModel with the specified configuration
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro",
+    model_name="gemini-2.0-flash",
     generation_config=generation_config,
     system_instruction="Provide tour guidance and information."
 )
+
+
+retry_on_429_or_503 = google_retry.Retry(
+    predicate=lambda e: isinstance(e, genai.errors.APIError) and e.code in {429, 503},
+    initial=1.0,  # seconds before first retry
+    maximum=10.0, # max delay between retries
+    multiplier=2.0,  # exponential backoff
+    deadline=30.0  # total timeout
+)
+
+is_retriable = lambda e: (isinstance(e, genai.errors.APIError) and e.code in {429, 503})
 
 
 # Create your views here.
@@ -31,6 +43,7 @@ model = genai.GenerativeModel(
 def home(request):
     template_name = 'home.html'
     return render(request, template_name)
+
 
 @csrf_exempt
 def chat(request):
@@ -42,18 +55,19 @@ def chat(request):
             return JsonResponse({'error': 'No message provided'}, status=400)
 
         try:
-            # Start a chat session with the user's message
-            chat_session = model.start_chat(history=[{"role": "user", "parts": [user_message]}])
-            response = chat_session.send_message(user_message)
+            # Retry the entire interaction
+            @retry_on_429_or_503
+            def send_message_with_retry():
+                chat_session = model.start_chat(history=[{"role": "user", "parts": [user_message]}])
+                return chat_session.send_message(user_message)
 
-            # Extract the response text
+            response = send_message_with_retry()
+
             reply = response.text.strip() if response and response.text else "Sorry, I couldn't respond."
             return JsonResponse({'reply': reply})
 
         except Exception as e:
-            # Return a JSON response with the error message
             return JsonResponse({'error': str(e)}, status=500)
 
     else:
-        # Return a 405 Method Not Allowed if the request is not POST
         return JsonResponse({'error': 'Only POST method is allowed'}, status=405)

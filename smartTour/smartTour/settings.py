@@ -139,7 +139,7 @@ STATICFILES_DIRS = [
 
 AUTH_USER_MODEL = 'accounts.User'
 
-API_KEY = "AIzaSyCGWIftmbMd8nNLdt1ngHnM81IIzd82e5k"
+API_KEY ="AIzaSyCGWIftmbMd8nNLdt1ngHnM81IIzd82e5k"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
